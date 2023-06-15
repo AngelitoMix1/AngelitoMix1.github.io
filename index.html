@@ -82,6 +82,7 @@
 
   <div id="questionContainer"></div>
   <div id="optionsContainer"></div>
+  <div id="utilityContainer"></div>
   <div id="result"></div>
   <button class="option" onclick="restartGame()">Reiniciar Juego</button>
 
@@ -91,54 +92,62 @@
   <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
   <script>
     var questions = [
-      {
-        question: "Es una serie de pasos organizados que describe un proceso a seguir para dar solución a un problema en específico.",
+     {
+        question: "1/8 Es una serie de pasos organizados que describe un proceso a seguir para dar solución a un problema en específico.",
+        utility: "1/8 Ayuda a estructurar la solución de un problema en pasos definidos.",
         options: ["Algoritmo", "Programa", "Proceso", "Procesador"],
         answer: "Algoritmo"
       },
       {
-        question: "Es un algoritmo que indica al ordenador qué pasos debe realizar y en qué orden para llevar a cabo una tarea específica. Se escriben utilizando un lenguaje de programación.",
+        question: "2/8 Es un algoritmo que indica al ordenador qué pasos debe realizar y en qué orden para llevar a cabo una tarea específica. Se escriben utilizando un lenguaje de programación.",
+        utility: "2/8 Instruye al ordenador sobre cómo realizar una tarea específica.",
         options: ["Algoritmo", "Programa", "Proceso", "Procesador"],
         answer: "Programa"
       },
       {
-        question: "Es una secuencia de pasos interrelacionados que se llevan a cabo para completar una actividad o alcanzar un objetivo.",
+        question: "3/8 Es una secuencia de pasos interrelacionados que se llevan a cabo para completar una actividad o alcanzar un objetivo.",
+        utility: "3/8 Permite completar una actividad o lograr un objetivo mediante una secuencia de pasos.",
         options: ["Algoritmo", "Programa", "Proceso", "Interbloqueo"],
         answer: "Proceso"
       },
       {
-        question: "Es la unidad central de procesamiento de una computadora que ejecuta instrucciones y realiza operaciones lógicas y aritméticas en los datos.",
+        question: "4/8 Es la unidad central de procesamiento de una computadora que ejecuta instrucciones y realiza operaciones lógicas y aritméticas en los datos.",
+        utility: "4/8 Realiza operaciones y ejecuta instrucciones en una computadora.",
         options: ["Algoritmo", "Programa", "Proceso", "Procesador"],
         answer: "Procesador"
       },
       {
-        question: "Es un término utilizado en la computación para referirse a una unidad de trabajo que se realiza dentro de un programa o sistema. Puede incluir múltiples tareas o subprocesos",
+        question: "5/8 Es un término utilizado en la computación para referirse a una unidad de trabajo que se realiza dentro de un programa o sistema. Puede incluir múltiples tareas o subprocesos",
+        utility: "5/8 Representa una unidad de trabajo dentro de un programa o sistema.",
         options: ["Tarea o Job", "Programa", "Proceso", "Procesador"],
         answer: "Tarea o Job"
       },
       {
-        question: "Es una sesión de interacción entre un usuario y un sistema informático. Puede incluir el inicio de sesión, la realización de tareas y el cierre de sesión.",
+        question: "6/8 Es una sesión de interacción entre un usuario y un sistema informático. Puede incluir el inicio de sesión, la realización de tareas y el cierre de sesión.",
+        utility: "6/8 Permite la interacción entre un usuario y un sistema informático.",
         options: ["Tarea o Job", "Sesión", "Lote", "Interbloqueo"],
         answer: "Sesión"
       },
       {
-        question: "Es una situación en la que dos o más procesos o hilos de ejecución se bloquean mutuamente, impidiendo que cada uno avance. Puede ocurrir debido a la competencia por recursos compartidos.",
+        question: "7/8 Es una situación en la que dos o más procesos o hilos de ejecución se bloquean mutuamente, impidiendo que cada uno avance. Puede ocurrir debido a la competencia por recursos compartidos.",
+        utility: "7/8 Es una situación donde los procesos o hilos de ejecución se bloquean mutuamente.",
         options: ["Tarea o Job", "Sesión", "Interbloqueo", "Procesador"],
         answer: "Interbloqueo"
       },
       {
-        question: "Característica típica de ciertos procesos, que indica una serie de tareas que se ejecutan de forma sucesiva en el ordenador y se consideran como una unidad.",
+        question: "8/8 Característica típica de ciertos procesos, que indica una serie de tareas que se ejecutan de forma sucesiva en el ordenador y se consideran como una unidad.",
+        utility: "8/8 Indica una serie de tareas ejecutadas de forma sucesiva como una unidad.",
         options: ["Algoritmo", "Programa", "Proceso", "Lote"],
         answer: "Lote"
       },
     ];
-
     var currentQuestion = 0;
     var score = 0;
     var attemptCount = 8;
 
     var questionContainer = document.getElementById("questionContainer");
     var optionsContainer = document.getElementById("optionsContainer");
+    var utilityContainer = document.getElementById("utilityContainer");
     var result = document.getElementById("result");
 
     function displayQuestion() {
@@ -165,6 +174,7 @@
       } else {
         result.innerHTML = "<span style='color:#ff0000'>¡Incorrecto!</span>";
       }
+      utilityContainer.innerHTML = "<div class='utility'>" + questions[currentQuestion].utility + "</div>";
 
       currentQuestion++;
       attemptCount--;
@@ -205,6 +215,7 @@
       score = 0;
       attemptCount = 8;
       result.innerHTML = "";
+      utilityContainer.innerHTML = "";
       displayQuestion();
     }
 
@@ -280,7 +291,7 @@
         events: {
           onhover: {
             enable: true,
-            mode: "repulse"
+            mode: "grab"
           },
           onclick: {
             enable: true,
@@ -290,7 +301,7 @@
         },
         modes: {
           grab: {
-            distance: 400,
+            distance: 140,
             line_linked: {
               opacity: 1
             }
@@ -303,7 +314,8 @@
             speed: 3
           },
           repulse: {
-            distance: 200
+            distance: 200,
+            duration: 0.4
           },
           push: {
             particles_nb: 4
@@ -318,3 +330,4 @@
   </script>
 </body>
 </html>
+
