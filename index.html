@@ -1,333 +1,119 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <style>
-    @import url('https://fonts.googleapis.com/css?family=Orbitron&display=swap');
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulación de Monte Carlo</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
 
-    body {
-      font-family: 'Orbitron', sans-serif;
-      background-color: #000000;
-      color: #ffffff;
-    }
+        }
 
-    h1 {
-      text-align: center;
-      color: #00ffff;
-      margin-top: 30px;
-      font-size: 48px;
-      text-shadow: 0 0 10px #00ffff;
-    }
+        h1 {
+            color: #007aff;
+            margin-top: 20px;
+        }
 
-    .question {
-      margin: 20px;
-      padding: 20px;
-      border-radius: 10px;
-      background-color: rgba(0, 0, 0, 0.8);
-      text-align: center;
-      box-shadow: inset 0 0 20px #00ffff;
-    }
+        #results {
+            margin-bottom: 20px;
+        }
 
-    .options {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      margin-top: 20px;
-    }
+        #histogram {
+            width: 80%;
+            margin: 20px auto;
+        }
 
-    .option {
-      margin: 10px;
-      padding: 10px 20px;
-      border-radius: 5px;
-      background-color: rgba(0, 0, 0, 0.8);
-      color: #ffffff;
-      cursor: pointer;
-      transition: all 0.3s ease-in-out;
-      box-shadow: inset 0 0 10px #00ffff;
-    }
+        button {
+            background-color: #007aff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
 
-    .option:hover {
-      transform: scale(1.1);
-      background-color: rgba(0, 255, 255, 0.2);
-    }
-
-    #result {
-      text-align: center;
-      margin-top: 20px;
-      font-weight: bold;
-      font-size: 18px;
-    }
-    
-    .particles-js-canvas-el {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-    }
-
-    .instagram-logo {
-      position: fixed;
-      bottom: 0;
-      right: 0;
-      margin: 10px;
-      width: 40px; /* Nuevo tamaño del logo */
-      height: 40px; /* Nuevo tamaño del logo */
-    }
-  </style>
+        button:hover {
+            background-color: #0055ff;
+        }
+    </style>
 </head>
 <body>
-  <div id="particles-js"></div>
-  <h1>¡Adivina la palabra!</h1>
-
-  <div id="questionContainer"></div>
-  <div id="optionsContainer"></div>
-  <div id="utilityContainer"></div>
-  <div id="result"></div>
-  <button class="option" onclick="restartGame()">Reiniciar Juego</button>
-
-  <a href="https://instagram.com/playa_parking?igshid=MzNlNGNkZWQ4Mg=="><img class="instagram-logo" src="https://www.freepnglogos.com/uploads/instagram-logo-png-transparent-0.png" alt="Instagram Logo" width="80" height="80"></a>
-
-
-  <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
-  <script>
-    var questions = [
-     {
-        question: "1/8 Es una serie de pasos organizados que describe un proceso a seguir para dar solución a un problema en específico.",
-        utility: "1/8 Ayuda a estructurar la solución de un problema en pasos definidos.",
-        options: ["Algoritmo", "Programa", "Proceso", "Procesador"],
-        answer: "Algoritmo"
-      },
-      {
-        question: "2/8 Es un algoritmo que indica al ordenador qué pasos debe realizar y en qué orden para llevar a cabo una tarea específica. Se escriben utilizando un lenguaje de programación.",
-        utility: "2/8 Instruye al ordenador sobre cómo realizar una tarea específica.",
-        options: ["Algoritmo", "Programa", "Proceso", "Procesador"],
-        answer: "Programa"
-      },
-      {
-        question: "3/8 Es una secuencia de pasos interrelacionados que se llevan a cabo para completar una actividad o alcanzar un objetivo.",
-        utility: "3/8 Permite completar una actividad o lograr un objetivo mediante una secuencia de pasos.",
-        options: ["Algoritmo", "Programa", "Proceso", "Interbloqueo"],
-        answer: "Proceso"
-      },
-      {
-        question: "4/8 Es la unidad central de procesamiento de una computadora que ejecuta instrucciones y realiza operaciones lógicas y aritméticas en los datos.",
-        utility: "4/8 Realiza operaciones y ejecuta instrucciones en una computadora.",
-        options: ["Algoritmo", "Programa", "Proceso", "Procesador"],
-        answer: "Procesador"
-      },
-      {
-        question: "5/8 Es un término utilizado en la computación para referirse a una unidad de trabajo que se realiza dentro de un programa o sistema. Puede incluir múltiples tareas o subprocesos",
-        utility: "5/8 Representa una unidad de trabajo dentro de un programa o sistema.",
-        options: ["Tarea o Job", "Programa", "Proceso", "Procesador"],
-        answer: "Tarea o Job"
-      },
-      {
-        question: "6/8 Es una sesión de interacción entre un usuario y un sistema informático. Puede incluir el inicio de sesión, la realización de tareas y el cierre de sesión.",
-        utility: "6/8 Permite la interacción entre un usuario y un sistema informático.",
-        options: ["Tarea o Job", "Sesión", "Lote", "Interbloqueo"],
-        answer: "Sesión"
-      },
-      {
-        question: "7/8 Es una situación en la que dos o más procesos o hilos de ejecución se bloquean mutuamente, impidiendo que cada uno avance. Puede ocurrir debido a la competencia por recursos compartidos.",
-        utility: "7/8 Es una situación donde los procesos o hilos de ejecución se bloquean mutuamente.",
-        options: ["Tarea o Job", "Sesión", "Interbloqueo", "Procesador"],
-        answer: "Interbloqueo"
-      },
-      {
-        question: "8/8 Característica típica de ciertos procesos, que indica una serie de tareas que se ejecutan de forma sucesiva en el ordenador y se consideran como una unidad.",
-        utility: "8/8 Indica una serie de tareas ejecutadas de forma sucesiva como una unidad.",
-        options: ["Algoritmo", "Programa", "Proceso", "Lote"],
-        answer: "Lote"
-      },
-    ];
-    var currentQuestion = 0;
-    var score = 0;
-    var attemptCount = 8;
-
-    var questionContainer = document.getElementById("questionContainer");
-    var optionsContainer = document.getElementById("optionsContainer");
-    var utilityContainer = document.getElementById("utilityContainer");
-    var result = document.getElementById("result");
-
-    function displayQuestion() {
-      var question = questions[currentQuestion];
-
-      questionContainer.innerHTML = "<div class='question'>" + question.question + "</div>";
-
-      var optionsHtml = "";
-      
-      // Añadir código para mezclar las opciones al azar
-      var shuffledOptions = shuffleArray(question.options);
-      
-      for (var i = 0; i < shuffledOptions.length; i++) {
-        optionsHtml += "<div class='option' onclick='checkAnswer(\"" + shuffledOptions[i] + "\")'>" + shuffledOptions[i] + "</div>";
-      }
-
-      optionsContainer.innerHTML = "<div class='options'>" + optionsHtml + "</div>";
-    }
-
-    function checkAnswer(option) {
-      if (option == questions[currentQuestion].answer) {
-        score++;
-        result.innerHTML = "<span style='color:#00ff00'>¡Correcto!</span>";
-      } else {
-        result.innerHTML = "<span style='color:#ff0000'>¡Incorrecto!</span>";
-      }
-      utilityContainer.innerHTML = "<div class='utility'>" + questions[currentQuestion].utility + "</div>";
-
-      currentQuestion++;
-      attemptCount--;
-
-      if (currentQuestion < questions.length && attemptCount > 0) {
-        setTimeout(displayQuestion, 1000);
-      } else {
-        setTimeout(showFinalResult, 1000);
-      }
-    }
-
-    function showFinalResult() {
-      result.innerHTML = "<span style='color:#00ffff'>Tu puntaje es: </span>" + score + "/" + questions.length;
-    }
-    
-    // Función para mezclar un array al azar
-    function shuffleArray(array) {
-       var currentIndex = array.length, temporaryValue, randomIndex;
-
-       // Mientras queden elementos a mezclar...
-       while (0 !== currentIndex) {
-
-         // Seleccionar un elemento al azar
-         randomIndex = Math.floor(Math.random() * currentIndex);
-         currentIndex -= 1;
-
-         // E intercambiarlo con el elemento actual
-         temporaryValue = array[currentIndex];
-         array[currentIndex] = array[randomIndex];
-         array[randomIndex] = temporaryValue;
-       }
-
-       return array;
-     }
-
-    function restartGame() {
-      currentQuestion = 0;
-      score = 0;
-      attemptCount = 8;
-      result.innerHTML = "";
-      utilityContainer.innerHTML = "";
-      displayQuestion();
-    }
-
-    displayQuestion();
-
-    /* Configuración de particles.js */
-    particlesJS("particles-js", {
-      particles: {
-        number: {
-          value: 80,
-          density: {
-            enable: true,
-            value_area: 800
-          }
-        },
-        color: {
-          value: "#ffffff"
-        },
-        shape: {
-          type: "circle",
-          stroke: {
-            width: 0,
-            color: "#000000"
-          },
-          polygon: {
-            nb_sides: 5
-          }
-        },
-        opacity: {
-          value: 0.5,
-          random: false,
-          anim: {
-            enable: false,
-            speed: 1,
-            opacity_min: 0.1,
-            sync: false
-          }
-        },
-        size: {
-          value: 3,
-          random: true,
-          anim: {
-            enable: false,
-            speed: 40,
-            size_min: 0.1,
-            sync: false
-          }
-        },
-        line_linked: {
-          enable: true,
-          distance: 150,
-          color: "#ffffff",
-          opacity: 0.4,
-          width: 1
-        },
-        move: {
-          enable: true,
-          speed: 6,
-          direction: "none",
-          random: false,
-          straight: false,
-          out_mode: "out",
-          bounce: false,
-          attract: {
-            enable: false,
-            rotateX: 600,
-            rotateY: 1200
-          }
-        }
-      },
-      interactivity: {
-        detect_on: "canvas",
-        events: {
-          onhover: {
-            enable: true,
-            mode: "grab"
-          },
-          onclick: {
-            enable: true,
-            mode: "push"
-          },
-          resize: true
-        },
-        modes: {
-          grab: {
-            distance: 140,
-            line_linked: {
-              opacity: 1
+    <h1>Simulación de Monte Carlo: Tiempo de consulta a servidores en paralelo</h1>
+<a href="https://instagram.com/playa_parking?igshid=MzNlNGNkZWQ4Mg=="><img class="instagram-logo" src="https://www.freepnglogos.com/uploads/instagram-logo-png-transparent-0.png" alt="Instagram Logo" width="80" height="80"></a>
+    <div id="results"></div>
+    <div id="histogram"></div>
+    <button id="new-simulation">Realizar nueva simulación</button>
+    <button id="dark-mode">Modo oscuro</button>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script>
+        function tiempoConsulta() {
+            let tiempoTotal = 0;
+            for (let i = 0; i < 5; i++) {
+                tiempoTotal += Math.random() * (10 - 1) + 1; // Simular el tiempo de consulta de cada servidor
             }
-          },
-          bubble: {
-            distance: 400,
-            size: 40,
-            duration: 2,
-            opacity: 8,
-            speed: 3
-          },
-          repulse: {
-            distance: 200,
-            duration: 0.4
-          },
-          push: {
-            particles_nb: 4
-          },
-          remove: {
-            particles_nb: 2
-          }
+            return tiempoTotal;
         }
-      },
-      retina_detect: true
-    });
-  </script>
+
+        function realizarSimulacion() {
+            let tiempos = [];
+            for (let i = 0; i < 10000; i++) {
+                tiempos.push(tiempoConsulta());
+            }
+
+            let media = tiempos.reduce((a, b) => a + b, 0) / tiempos.length;
+            let desviacionEstandar = Math.sqrt(tiempos.map(x => Math.pow(x - media, 2)).reduce((a, b) => a + b, 0) / tiempos.length);
+            let intervaloInferior = media - 1.96 * desviacionEstandar / Math.sqrt(tiempos.length);
+            let intervaloSuperior = media + 1.96 * desviacionEstandar / Math.sqrt(tiempos.length);
+
+            document.getElementById('results').innerHTML = `
+                <p>Tiempo promedio de consulta: ${media.toFixed(2)}</p>
+                <p>Desviación estándar: ${desviacionEstandar.toFixed(2)}</p>
+                <p>Intervalo de confianza al 95%: (${intervaloInferior.toFixed(2)}, ${intervaloSuperior.toFixed(2)})</p>
+            `;
+
+            let histogramData = {
+                x: tiempos,
+                type: 'histogram'
+            };
+
+            Plotly.newPlot('histogram', [histogramData], {
+                title: 'Simulación de Monte Carlo: Tiempo de consulta a servidores en paralelo',
+                xaxis: { title: 'Tiempo de consulta (segundos)' },
+                yaxis: { title: 'Frecuencia' },
+                marker: {
+                    color: 'rgba(0, 123, 255, 0.6)',
+                    line: {
+                        color: 'rgba(0, 123, 255, 1)',
+                        width: 1
+                    }
+                }
+            });
+        }
+
+        realizarSimulacion();
+
+        document.getElementById('new-simulation').addEventListener('click', function() {
+            realizarSimulacion();
+        });
+
+        let darkMode = false;
+        document.getElementById('dark-mode').addEventListener('click', function() {
+            darkMode = !darkMode;
+            if (darkMode) {
+                document.body.style.backgroundColor = '#222';
+                document.body.style.color = '#fff';
+            } else {
+                document.body.style.backgroundColor = '#fff';
+                document.body.style.color = '#000';
+            }
+        });
+    </script>
 </body>
 </html>
 
