@@ -1,0 +1,92 @@
+.formulario.QR {
+    background: rgba(38, 66, 90, 1);
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: auto;
+    box-shadow: 0 2px 10px rgba(95, 215, 255, 0.1);
+    padding: 400px; /* Ajuste de padding */
+    text-align: center;
+    position: relative;
+}
+
+/* Títulos */
+.formulario.QR h1, .formulario.QR h2 {
+    color: rgba(225, 203, 215, 1);
+    position: relative;
+    top:-35px;
+    left:30px;
+
+}
+
+.formulario.QR h1 {
+    margin-bottom: 20px;
+    font-size: 24px;
+}
+
+.formulario.QR h2 {
+    font-size: 16px;
+    margin-top: 10px;
+}
+
+/* Logo */
+.formulario.QR img.logo {
+    width: 100px;
+    margin-bottom: 20px;
+    position: relative;
+    top: -50px; /* Ajuste vertical del logo */
+    left: 150px; /* Ajuste horizontal del logo */
+}
+
+/* Botón de volver */
+.formulario.QR .image-volverq {
+    background-color: transparent;
+    border: none;
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    cursor: pointer;
+    width: 30px;
+    height: 30px;
+    background-image: url('botonvolver.png');
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+.formulario.QR .image-volverq {
+    position: relative;
+    top: -30px;
+    left: -150px;
+}
+
+/* Campo de texto */
+.formulario.QR input[type="text"] {
+    color: black;
+    width: 80%; /* Ancho del campo de texto más pequeño */
+    max-width: 210px; /* Máximo ancho del campo de texto */
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+.formulario.QR input[type="text"] {
+    position: relative;
+    top: -20px;
+    left: -20px;
+}
+
+/* Contenedor de QR */
+.formulario.QR .cuadrado {
+    width: 50px;
+    height: 50px;
+    background-color: rgba(13, 30, 46, 1);
+    align-items: center;
+    justify-content: center;
+    margin-top: 20px;
+    border-radius: 10px;
+}
+.formulario.QR .cuadrado {
+    position: relative;
+    top: 0vh;
+    left: 140vh;
+}

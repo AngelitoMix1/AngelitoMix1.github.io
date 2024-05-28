@@ -1,0 +1,76 @@
+/* CredencialDig.css */
+.CredencialDig {
+    position: relative;
+    top: 10px;
+    width: 85vh;
+    height: 100vh; 
+    background: url('fondoCR.png') no-repeat center center;
+    background-size: cover;
+
+}
+
+.CredencialDig .text-overlay {
+    position: relative;
+    z-index: 1;
+    color: #fff;
+    font-size: 16px;
+    margin-bottom: 10px;
+}
+
+.CredencialDig .text-overlay label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.CredencialDig .text-overlay input {
+    width: calc(70% - 0px);
+    padding: 6px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: rgba(255, 255, 255, 0.8);
+}
+
+.image-button {
+    position: relative;
+    z-index: 1;
+    width: 50px; /* Ajusta el tamaño según sea necesario */
+    height: 50px; /* Ajusta el tamaño según sea necesario */
+    border: none;
+    background: url('botonQR.png') no-repeat center center;
+    background-size: cover;
+    cursor: pointer;
+}
+.image-button{
+    position: relative;
+    left: 239px;
+    top:550px;
+}
+
+.image-button img {
+    display: none; /* Ocultamos la imagen interna del botón */
+}
+
+.text-overlay {
+    position: absolute; 
+    top: 110px; 
+    left: 70px; 
+}
+
+.image-button {
+    position: absolute; 
+    bottom: 30px; 
+    right: 120px; 
+}
+
+.image-volver {
+    
+    position: relative; 
+    bottom: -40px; 
+    right: -40px; 
+    width: 50px; /* Ajusta el tamaño según sea necesario */
+    height: 50px; /* Ajusta el tamaño según sea necesario */
+    border: none;
+    background: url('botonvolver.png') no-repeat center center;
+    background-size: cover;
+    cursor: pointer;
+}
