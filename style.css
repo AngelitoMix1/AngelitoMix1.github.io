@@ -15,8 +15,8 @@ body {
 .formulario {
     background: linear-gradient(180deg, rgba(13, 30, 46, 1) 40%, rgba(38, 66, 90, 0.5) 100%);
     border-radius: 10px;
-    width: 2200px;
-    padding: 200px;
+    width: 2200px; /* Este valor debe ajustarse */
+    padding: 200px; /* Este valor debe ajustarse */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     text-align: center;
     margin-bottom: 20px;
@@ -41,17 +41,16 @@ body {
     margin-bottom: 20px;
 }
 
-
 .input-container {
     position: relative;
     margin-bottom: 20px;
     width: 90%;
     top: 1vh;
-    left: 17vh;
+    left: 17vh; /* Este valor debe ajustarse */
 }
 
 .input-container input {
-    width: 300px;
+    width: 300px; /* Este valor debe ajustarse */
     padding: 12px;
     background: none;
     border: 2px solid #cc39e2;
@@ -87,7 +86,7 @@ body {
 }
 
 input[type="submit"] {
-    width: 10%;
+    width: 10%; /* Este valor debe ajustarse */
     padding: 12px;
     border: 1px solid;
     background: #6C3483;
@@ -117,3 +116,79 @@ input[type="submit"]:hover {
 .registrarse a:hover {
     text-decoration: underline;
 }
+
+/* Media Queries para responsividad */
+@media (max-width: 1200px) {
+    .formulario {
+        width: 80%;
+        padding: 50px;
+    }
+
+    .input-container {
+        left: 0;
+        width: 100%;
+    }
+
+    .input-container input {
+        width: 100%;
+    }
+
+    input[type="submit"] {
+        width: 100%;
+    }
+}
+
+@media (max-width: 768px) {
+    .formulario {
+        width: 90%;
+        padding: 30px;
+    }
+
+    .formulario h1 {
+        font-size: 20px;
+    }
+
+    .formulario h2 {
+        font-size: 16px;
+    }
+
+    .input-container label, .input-container input {
+        font-size: 12px;
+    }
+
+    .recordar, .registrarse {
+        font-size: 12px;
+    }
+
+    input[type="submit"] {
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    .formulario {
+        width: 95%;
+        padding: 20px;
+    }
+
+    .formulario h1 {
+        font-size: 18px;
+    }
+
+    .formulario h2 {
+        font-size: 14px;
+    }
+
+    .input-container label, .input-container input {
+        font-size: 10px;
+    }
+
+    .recordar, .registrarse {
+        font-size: 10px;
+    }
+
+    input[type="submit"] {
+        font-size: 12px;
+    }
+}
+
