@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simulación FDM y TDM en Movimiento</title>
+    <title>Simulación FDM y TDM</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
@@ -114,13 +114,19 @@
             border-radius: 50%;
             background-color: green;
         }
+
+        /* Justificar texto */
+        p {
+            text-align: justify;
+            max-width: 800px;
+        }
     </style>
 </head>
 <body class="light">
     <div class="content-wrapper">
         <button id="toggle-theme-btn"><i class="fas fa-adjust"></i> Modo Oscuro</button>
-        <h1 class="light">Simulación de FDM y TDM en Movimiento</h1>
-        <p style="text-align: center; max-width: 800px;">
+        <h1 class="light">Simulación de FDM y TDM</h1>
+        <p>
             La multiplexación por división de frecuencia (FDM) y la multiplexación por división de tiempo (TDM) son métodos 
             de transmisión de señales. FDM combina señales en diferentes bandas de frecuencia, mientras que TDM envía cada señal 
             en intervalos de tiempo. A continuación, se presentan visualizaciones en tiempo real de ambas técnicas.
@@ -287,10 +293,11 @@
                 container.classList.toggle('dark');
                 container.classList.toggle('light');
             });
+            
+            // Cambiar el texto del botón según el modo
+            const buttonText = body.classList.contains('dark') ? 'Modo Luz' : 'Modo Oscuro';
+            document.getElementById('toggle-theme-btn').textContent = buttonText;
         });
     </script>
 </body>
 </html>
-
-
-
