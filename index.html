@@ -3,387 +3,361 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mapa Conceptual Interactivo: Configuración de Switch</title>
+    <title>Glosario Interactivo de Gestión de Proyectos (PMBOK)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body {
-            font-family: Arial, sans-serif;
-            line-height: 1.6;
-            margin: 0;
-            padding: 20px;
-            background-color: #f4f4f4;
-            color: #333;
-        }
-        .container {
-            max-width: 1200px;
-            margin: auto;
-            background: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-        }
-        h1, h2 {
-            color: #0056b3;
-            border-bottom: 2px solid #0056b3;
-            padding-bottom: 10px;
-            text-align: center;
-        }
-        h3 {
-            color: #004085;
-        }
-
-        /* --- Estilos del Mapa Conceptual --- */
-        .tree {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 30px;
-            padding: 20px;
-            background-color: #fdfdfd;
-            border-radius: 8px;
-            border: 1px solid #eee;
-        }
-        .tree ul {
-            padding-top: 20px;
-            position: relative;
-            transition: all 0.5s;
-        }
-        .tree li {
-            float: left;
-            text-align: center;
-            list-style-type: none;
-            position: relative;
-            padding: 20px 5px 0 5px;
-            transition: all 0.5s;
-        }
-        /* Conectores */
-        .tree li::before, .tree li::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            right: 50%;
-            border-top: 2px solid #ccc;
-            width: 50%;
-            height: 20px;
-        }
-        .tree li::after {
-            right: auto;
-            left: 50%;
-            border-left: 2px solid #ccc;
-        }
-        .tree li:only-child::after, .tree li:only-child::before {
-            display: none;
-        }
-        .tree li:only-child {
-            padding-top: 0;
-        }
-        .tree li:first-child::before, .tree li:last-child::after {
-            border: 0 none;
-        }
-        .tree li:last-child::before {
-            border-right: 2px solid #ccc;
-            border-radius: 0 5px 0 0;
-        }
-        .tree li:first-child::after {
-            border-radius: 5px 0 0 0;
-        }
-        .tree ul ul::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 50%;
-            border-left: 2px solid #ccc;
-            width: 0;
-            height: 20px;
-        }
-        /* Nodos */
-        .tree li div {
-            border: 2px solid #007bff;
-            padding: 8px 12px;
-            text-decoration: none;
-            color: #333;
-            background-color: #e9f5ff;
-            font-family: monospace;
-            display: inline-block;
-            border-radius: 5px;
-            transition: all 0.3s ease;
-            min-width: 150px;
-        }
-        .tree li div.sub-item {
-            background-color: #fff;
-            border-color: #99caff;
-            font-size: 0.9em;
-            padding: 6px 10px;
-            min-width: 120px;
-        }
-        /* Nodos que son clickables */
-        .tree li div[data-target] {
-            cursor: pointer;
-        }
-        .tree li div[data-target]:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        }
-        /* Estilo para el nodo activo */
-        .tree li div.active {
-            border-color: #ff8c00; /* Naranja para destacar */
-            background-color: #fffbe6;
-            font-weight: bold;
-        }
-        .tree li div.central {
-            background-color: #0056b3;
-            color: white;
-            font-weight: bold;
-            font-size: 1.2em;
-            padding: 15px;
-            cursor: default;
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc; /* Fondo sólido y limpio */
         }
         
-        /* --- Contenedor de Detalles --- */
-        #details-container {
-            margin-top: 20px;
-            padding: 20px;
-            background-color: #f9f9f9;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            min-height: 250px;
+        @keyframes spin {
+            from { transform: translate(-50%, -50%) rotate(0deg); }
+            to { transform: translate(-50%, -50%) rotate(360deg); }
         }
-        #details-placeholder {
-            color: #888;
-            font-size: 1.2em;
-            text-align: center;
-            padding-top: 80px;
+
+        .card-container {
+            position: relative;
+            perspective: 1000px;
+            cursor: pointer;
+            border-radius: 0.85rem; /* 14px */
+            overflow: hidden;
+            -webkit-mask-image: -webkit-radial-gradient(white, black);
         }
-        /* Ocultar pasos por defecto */
-        .step {
-            display: none;
-            border-left: 4px solid #007bff;
-            padding-left: 15px;
+
+        /* Borde animado (oculto por defecto) */
+        .card-container::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(from 180deg at 50% 50%, #3b82f6, #a855f7, #ec4899, #f59e0b, #3b82f6);
+            z-index: 1;
+            animation: spin 4s linear infinite;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
         }
-        /* Mostrar el paso visible */
-        .step.visible {
-            display: block;
+        
+        /* Muestra el borde al hacer hover */
+        .card-container:hover::before {
+            opacity: 1;
         }
-        code {
-            background-color: #eef;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-family: 'Courier New', Courier, monospace;
-            display: block;
-            margin-top: 10px;
-            margin-bottom: 10px;
-            white-space: pre-wrap;
-            text-align: left;
-        }
-        .image-placeholder {
+
+        .card-inner {
+            position: relative;
             width: 100%;
-            height: 200px;
-            background-color: #e9ecef;
-            border: 2px dashed #ced4da;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #6c757d;
-            margin-top: 15px;
-            border-radius: 5px;
+            height: 100%;
+            transition: transform 0.7s;
+            transform-style: preserve-3d;
+            z-index: 2;
+        }
+        
+        /* Crea un espacio para que se vea el borde */
+        .card-container:hover .card-front,
+        .card-container:hover .card-back {
+             margin: 2px;
+             width: calc(100% - 4px);
+             height: calc(100% - 4px);
+        }
+
+        .card-container.is-flipped .card-inner {
+            transform: rotateY(180deg);
+        }
+
+        .card-front,
+        .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden; /* Safari */
+            backface-visibility: hidden;
+            border-radius: 0.75rem; /* 12px */
+            transition: all 0.3s ease-in-out;
+        }
+
+        .card-back {
+            transform: rotateY(180deg);
+        }
+
+        /* Estilos del Modal del Quiz (pequeños y no intrusivos) */
+        #quiz-modal {
+            transition: opacity 0.25s ease;
+        }
+        #quiz-modal-content {
+            transition: transform 0.25s ease;
         }
     </style>
 </head>
-<body>
+<body class="text-slate-800">
 
-<div class="container">
-    <h1>Mapa Conceptual Interactivo: Configuración de Switch</h1>
-    
-    <div class="tree">
-        <ul>
-            <li>
-                <div class="central">Configuración Básica</div>
-                <ul>
-                    <li>
-                        <div><strong>Acceso Inicial</strong></div>
-                        <ul>
-                            <li><div class="sub-item" data-target="step-enable">enable</div></li>
-                            <li><div class="sub-item" data-target="step-config-t">configure terminal</div></li>
-                        </ul>
-                    </li>
-                    <li>
-                        <div><strong>Parámetros Básicos</strong></div>
-                        <ul>
-                            <li><div class="sub-item" data-target="step-hostname">hostname S1</div></li>
-                            <li><div class="sub-item" data-target="step-domain-lookup">no ip domain-lookup</div></li>
-                            <li><div class="sub-item" data-target="step-banner">banner motd</div></li>
-                        </ul>
-                    </li>
-                    <li>
-                        <div><strong>Seguridad Local</strong></div>
-                        <ul>
-                            <li><div class="sub-item" data-target="step-secret">enable secret class</div></li>
-                            <li><div class="sub-item" data-target="step-line-con">line con 0 + pass</div></li>
-                            <li><div class="sub-item" data-target="step-line-vty">line vty 0 15 + pass</div></li>
-                            <li><div class="sub-item" data-target="step-encryption">service password-encryption</div></li>
-                        </ul>
-                    </li>
-                    <li>
-                        <div><strong>Admin. Remota (SVI)</strong></div>
-                        <ul>
-                            <li><div class="sub-item" data-target="step-vlan">vlan 99</div></li>
-                            <li><div class="sub-item" data-target="step-int-vlan">interface vlan99</div></li>
-                            <li><div class="sub-item" data-target="step-ip-addr">ip address ...</div></li>
-                            <li><div class="sub-item" data-target="step-gateway">ip default-gateway</div></li>
-                        </ul>
-                    </li>
-                    <li>
-                        <div><strong>Guardado</strong></div>
-                        <ul>
-                            <li><div class="sub-item" data-target="step-copy-run">copy run start</div></li>
-                        </ul>
-                    </li>
-                </ul>
-            </li>
-        </ul>
+    <!-- Encabezado -->
+    <header class="bg-white/80 backdrop-blur-sm shadow-sm sticky top-0 z-20">
+        <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+            <div class="text-center">
+                <h1 class="text-4xl font-bold text-slate-900">Glosario Interactivo de Gestión de Proyectos</h1>
+                <p class="mt-2 text-lg text-slate-600">Conceptos clave de la Guía del PMBOK® 7ª Edición.</p>
+            </div>
+            <!-- Barra de Búsqueda -->
+            <div class="mt-6 max-w-lg mx-auto flex items-center space-x-2">
+                 <input id="search-input" type="text" placeholder="Buscar un término..." class="flex-1 px-4 py-2 border border-gray-300 rounded-md bg-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent sm:text-sm">
+                 <!-- Botón pequeño del quiz (añadido con mínima intervención en UI) -->
+                 <button id="start-quiz-btn" class="ml-2 bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-semibold">¡Ponte a Prueba!</button>
+            </div>
+            <!-- Filtros -->
+            <div id="filters" class="mt-4 flex justify-center space-x-2">
+                <button data-filter="all" class="filter-btn bg-blue-600 text-white px-4 py-2 rounded-full text-sm font-semibold">Todos</button>
+                <button data-filter="fundamentos" class="filter-btn bg-white text-slate-700 px-4 py-2 rounded-full text-sm font-semibold border border-slate-300 hover:bg-slate-100">Fundamentos</button>
+                <button data-filter="planificacion" class="filter-btn bg-white text-slate-700 px-4 py-2 rounded-full text-sm font-semibold border border-slate-300 hover:bg-slate-100">Planificación</button>
+                <button data-filter="ejecucion" class="filter-btn bg-white text-slate-700 px-4 py-2 rounded-full text-sm font-semibold border border-slate-300 hover:bg-slate-100">Ejecución y Control</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Contenido principal del glosario -->
+    <main class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+        <div id="glossary-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            
+            <!-- Las tarjetas se generan dinámicamente con JS -->
+            
+        </div>
+    </main>
+
+    <!-- Modal del Quiz (oculto por defecto) -->
+    <div id="quiz-modal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center p-4 z-50 invisible opacity-0">
+        <div id="quiz-modal-content" class="bg-white rounded-lg shadow-2xl w-full max-w-md p-6 transform scale-95">
+            <div class="flex justify-between items-start">
+                <h2 class="text-2xl font-bold text-slate-800 mb-4">Ponte a Prueba</h2>
+                <button id="close-quiz-btn" class="text-slate-500 hover:text-slate-800 text-2xl leading-none">&times;</button>
+            </div>
+            <p class="text-slate-600 mb-2">¿Qué término corresponde a la siguiente definición?</p>
+            <p id="quiz-definition" class="bg-slate-100 p-4 rounded-md text-slate-700 mb-4 min-h-[100px]"></p>
+            <input id="quiz-answer-input" type="text" placeholder="Escribe el término aquí..." class="w-full px-3 py-2 border border-gray-300 rounded-md mb-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <div id="quiz-feedback" class="text-sm min-h-[20px] mb-4"></div>
+            <div class="flex justify-end space-x-3">
+                <button id="check-answer-btn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md">Comprobar</button>
+                <button id="next-question-btn" class="bg-slate-600 hover:bg-slate-700 text-white font-bold py-2 px-4 rounded-md hidden">Siguiente</button>
+            </div>
+        </div>
     </div>
-
-    <hr>
-
-    <div id="details-container">
-        
-        <div id="details-placeholder">
-            <p><strong>Haz clic en un comando del mapa para ver su explicación.</strong></p>
-        </div>
-
-        <div id="step-enable" class="step">
-            <h2>Paso 1: Acceder al Modo EXEC Privilegiado</h2>
-            <p>Permite pasar del modo de usuario (`Switch>`) al modo privilegiado (`Switch#`), necesario para ejecutar comandos de configuración y verificación avanzados.</p>
-            <code>Switch> enable</code>
-             <img src="img/1.png" alt="Paso 1" style="width:100%; height:auto; border-radius:5px;">
-        </div>
-
-        <div id="step-config-t" class="step">
-            <h2>Paso 2: Acceder al Modo de Configuración Global</h2>
-            <p>Desde el modo privilegiado, este comando ingresa al modo de configuración global (`Switch(config)#`), donde se pueden realizar cambios que afectan a todo el dispositivo.</p>
-            <code>Switch# configure terminal</code>
-            <img src="img/2.png" alt="Paso 1" style="width:100%; height:auto; border-radius:5px;">
-        </div>
-        
-        <div id="step-hostname" class="step">
-            <h2>Paso 3: Asignar un Nombre de Host</h2>
-            <p>Cambia el nombre predeterminado del switch ("Switch") por uno más descriptivo ("S1") para identificarlo fácilmente en la red.</p>
-            <code>Switch(config)# hostname S1</code>
-             <img src="img/3.png" alt="Paso 1" style="width:100%; height:auto; border-radius:5px;">
-        </div>
-
-        <div id="step-domain-lookup" class="step">
-            <h2>Paso 4: Deshabilitar Búsquedas de DNS</h2>
-            <p>Evita que el switch intente traducir comandos mal escritos como si fueran nombres de dominio, lo que ahorra tiempo al evitar pausas innecesarias.</p>
-            <code>S1(config)# no ip domain-lookup</code>
-            <img src="img/4.png" alt="Paso 1" style="width:100%; height:auto; border-radius:5px;">
-        </div>
-
-        <div id="step-banner" class="step">
-            <h2>Paso 5: Configurar el Mensaje del Día (MOTD)</h2>
-            <p>Establece un banner o mensaje que se mostrará a cualquiera que intente acceder al dispositivo, usualmente para mostrar advertencias legales.</p>
-            <code>S1(config)# banner motd #Acceso no autorizado está estrictamente prohibido.#</code>
-             <img src="img/5.png" alt="Paso 1" style="width:100%; height:auto; border-radius:5px;">
-        </div>
-
-        <div id="step-secret" class="step">
-            <h2>Paso 6: Establecer Contraseña del Modo Privilegiado</h2>
-            <p>Configura una contraseña secreta y encriptada ("class") para proteger el acceso al modo EXEC privilegiado. Es más segura que el comando `enable password`.</p>
-            <code>S1(config)# enable secret class</code>
-             <img src="img/6.png" alt="Paso 1" style="width:100%; height:auto; border-radius:5px;">
-        </div>
-        
-        <div id="step-line-con" class="step">
-            <h2>Paso 7: Proteger la Línea de Consola</h2>
-            <p>Configura una contraseña para el acceso físico al switch a través del puerto de consola y exige que se solicite con el comando `login`.</p>
-            <code>S1(config)# line con 0</code>
-            <code>S1(config-line)# password cisco</code>
-            <code>S1(config-line)# login</code>
-            <img src="img/7.png" alt="Paso 1" style="width:100%; height:auto; border-radius:5px;">
-        </div>
-
-        <div id="step-line-vty" class="step">
-            <h2>Paso 8: Proteger las Líneas Virtuales (VTY)</h2>
-            <p>Aplica una contraseña a las líneas virtuales (0 a 15) para proteger el acceso remoto (Telnet/SSH). El comando `login` activa la solicitud de esta contraseña.</p>
-            <code>S1(config)# line vty 0 15</code>
-            <code>S1(config-line)# password cisco</code>
-            <code>S1(config-line)# login</code>
-            <img src="img/8.png" alt="Paso 1" style="width:100%; height:auto; border-radius:5px;">
-        </div>
-
-        <div id="step-encryption" class="step">
-            <h2>Paso 9: Encriptar las Contraseñas</h2>
-            <p>Este servicio cifra las contraseñas que se guardan en texto plano (como la de consola y vty) en el archivo de configuración para mejorar la seguridad.</p>
-            <code>S1(config)# service password-encryption</code>
-             <img src="img/9.png" alt="Paso 1" style="width:100%; height:auto; border-radius:5px;">
-        </div>
-
-        <div id="step-vlan" class="step">
-            <h2>Paso 10: Crear la VLAN de Administración</h2>
-            <p>Crea una VLAN específica (VLAN 99) para la gestión del switch. Es una buena práctica de seguridad separar el tráfico de administración del tráfico de datos.</p>
-            <code>S1(config)# vlan 99</code>
-            <img src="img/1.png" alt="Paso 1" style="width:100%; height:auto; border-radius:5px;">
-        </div>
-
-        <div id="step-int-vlan" class="step">
-            <h2>Paso 11: Ingresar a la Interfaz Virtual (SVI)</h2>
-            <p>Accede al modo de configuración de la interfaz virtual de la VLAN 99 para poder asignarle una dirección IP.</p>
-            <code>S1(config)# interface vlan99</code>
-            <div class="image-placeholder">[ Imagen del Paso 11 ]</div>
-        </div>
-        
-        <div id="step-ip-addr" class="step">
-            <h2>Paso 12: Asignar Dirección IP a la SVI</h2>
-            <p>Configura una dirección IP y máscara de subred en la SVI para permitir la administración remota del switch a través de la red.</p>
-            <code>S1(config-if)# ip address 192.168.1.2 255.255.255.0</code>
-            <code>S1(config-if)# no shutdown</code>
-            <div class="image-placeholder">[ Imagen del Paso 12 ]</div>
-        </div>
-
-        <div id="step-gateway" class="step">
-            <h2>Paso 13: Configurar el Gateway Predeterminado</h2>
-            <p>Establece la IP del router que el switch usará para comunicarse con dispositivos en otras redes. Es crucial para la administración remota.</p>
-            <code>S1(config)# ip default-gateway 192.168.1.1</code>
-            <div class="image-placeholder">[ Imagen del Paso 13 ]</div>
-        </div>
-
-        <div id="step-copy-run" class="step">
-            <h2>Paso 14: Guardar la Configuración</h2>
-            <p>Copia la configuración activa (running-config) a la memoria no volátil (startup-config) para que los cambios persistan después de un reinicio.</p>
-            <code>S1# copy running-config startup-config</code>
-            <div class="image-placeholder">[ Imagen del Paso 14 ]</div>
-        </div>
-
-    </div>
-
-</div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Seleccionar todos los nodos del mapa que tienen un 'data-target'
-    const nodes = document.querySelectorAll('.tree div[data-target]');
-    const detailsPlaceholder = document.getElementById('details-placeholder');
+    document.addEventListener('DOMContentLoaded', function () {
+        const glossaryGrid = document.getElementById('glossary-grid');
+        const searchInput = document.getElementById('search-input');
+        const filterBtns = document.querySelectorAll('.filter-btn');
 
-    nodes.forEach(node => {
-        node.addEventListener('click', function() {
-            // 1. Ocultar todos los detalles y quitar la clase 'active' de todos los nodos
-            document.querySelectorAll('.step').forEach(step => step.classList.remove('visible'));
-            nodes.forEach(n => n.classList.remove('active'));
+        // --- Nuevos Elementos para el Quiz y TTS 
+        const startQuizBtn = document.getElementById('start-quiz-btn');
+        const quizModal = document.getElementById('quiz-modal');
+        const quizModalContent = document.getElementById('quiz-modal-content');
+        const closeQuizBtn = document.getElementById('close-quiz-btn');
+        const quizDefinition = document.getElementById('quiz-definition');
+        const quizAnswerInput = document.getElementById('quiz-answer-input');
+        const quizFeedback = document.getElementById('quiz-feedback');
+        const checkAnswerBtn = document.getElementById('check-answer-btn');
+        const nextQuestionBtn = document.getElementById('next-question-btn');
+        let currentQuizTerm = null;
 
-            // 2. Ocultar el mensaje inicial
-            detailsPlaceholder.style.display = 'none';
+        // Contenido para las 20 tarjetas 
+        const terms = [
+            { title: 'Proyecto', category: 'fundamentos', icon: '<svg class="w-16 h-16 text-blue-500 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 9l4-4 4 4m0 6l-4 4-4-4"></path></svg>', formal: 'Esfuerzo temporal que se lleva a cabo para crear un producto, servicio o resultado único.', daily: 'Es como organizar una fiesta sorpresa. No es algo que haces todos los días (temporal) y el resultado es una celebración especial (única).', example: 'Construir una casa, desarrollar una nueva app, o planificar unas vacaciones.', ref: 'PMBOK® 7ª Ed., Sec. 1.2, pág. 4.' },
+            { title: 'Interesado', category: 'fundamentos', icon: '<svg class="w-16 h-16 text-blue-500 mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>', formal: 'Individuo, grupo u organización que puede afectar, verse afectado o percibirse a sí mismo como afectado por una decisión, actividad o resultado de un proyecto.', daily: 'Cualquier persona o grupo que tenga "algo que ver" con tu proyecto. Pueden ser los que pagan, los que lo usan, tu equipo, o incluso los vecinos que se quejan.', example: 'Para un parque nuevo: el ayuntamiento (cliente), los niños (usuarios), la constructora (ejecutor) y los vecinos.', ref: 'PMBOK® 7ª Ed., Glosario, pág. 244.' },
+            { title: 'Alcance', category: 'planificacion', icon: '<svg class="w-16 h-16 text-blue-500 mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>', formal: 'La suma de los productos, servicios y resultados que se proveerán como un proyecto. Define qué trabajo se requiere y qué no.', daily: 'Son las "reglas del juego". Define exactamente qué se va a hacer y, muy importante, qué NO se va a hacer. Es como la lista de ingredientes de una receta.', example: 'Alcance para "pintar una habitación": incluye lijar y pintar paredes. NO incluye pintar el techo.', ref: 'PMBOK® 7ª Ed., Principios, pág. 32.' },
+            { title: 'Cronograma', category: 'planificacion', icon: '<svg class="w-16 h-16 text-blue-500 mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>', formal: 'Un modelo que representa las actividades con sus duraciones, dependencias y otros atributos planificados.', daily: 'Es el calendario del proyecto. Te dice qué tarea se hace y para cuándo tiene que estar lista. Es el "cuándo" de tu plan.', example: 'Un itinerario de viaje: Lunes - Vuelo a París. Martes - Visita al Louvre. Miércoles - Torre Eiffel.', ref: 'PMBOK® 7ª Ed., Glosario, pág. 238.' },
+            { title: 'Riesgo', category: 'ejecucion', icon: '<svg class="w-16 h-16 text-blue-500 mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>', formal: 'Un evento o condición incierta que, si se produce, tiene un efecto positivo (oportunidad) o negativo (amenaza) en uno o más de los objetivos del proyecto.', daily: 'Cualquier cosa incierta que pueda pasar y afectar tu proyecto. Es el "¿Y si...?" de la planificación.', example: 'En un picnic: una amenaza es que llueva. Una oportunidad es que un amigo traiga un postre sorpresa.', ref: 'PMBOK® 7ª Ed., Principio 3.10, pág. 53.' },
+            { title: 'Entregable', category: 'ejecucion', icon: '<svg class="w-16 h-16 text-blue-500 mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>', formal: 'Cualquier producto, resultado o capacidad de prestar un servicio único y verificable que se debe producir para completar un proyecto.', daily: 'Es la "cosa" tangible o intangible que produces y le entregas a alguien. Es el resultado físico de tu trabajo.', example: 'En una web: el diseño visual (archivo), el código (programa) o el manual de usuario (documento).', ref: 'PMBOK® 7ª Ed., Glosario, pág. 240.' },
+            { title: 'Hito', category: 'planificacion', icon: '<svg class="w-16 h-16 text-blue-500 mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 21h6m2 0h2a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v14a2 2 0 002 2h2m0 0V9a2 2 0 012-2h2a2 2 0 012 2v12m-6 0h6"></path></svg>', formal: 'Un punto o evento significativo dentro del proyecto. No tiene duración.', daily: 'Son las banderas de control en una carrera. No son tareas, sino momentos clave que te dicen "¡Vas bien!". Sirven para medir el progreso.', example: 'En un proyecto de software: "Aprobación del diseño", "Finalización de la fase de pruebas", "Lanzamiento oficial".', ref: 'PMBOK® 7ª Ed., Glosario, pág. 243.' },
+            { title: 'Calidad', category: 'ejecucion', icon: '<svg class="w-16 h-16 text-blue-500 mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>', formal: 'El grado en que un conjunto de características inherentes satisface los requisitos.', daily: 'Asegurarse de que el resultado del proyecto hace exactamente lo que se supone que debe hacer. No se trata de que sea "perfecto", sino "adecuado para su propósito".', example: 'La calidad de una silla no es que sea de oro, sino que sea cómoda, soporte el peso para el que fue diseñada y no se rompa.', ref: 'PMBOK® 7ª Ed., Principio 3.8, pág. 47.' },
+            { title: 'Línea Base', category: 'planificacion', icon: '<svg class="w-16 h-16 text-blue-500 mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 6h16M4 12h16M4 18h7"></path></svg>', formal: 'La versión aprobada de un producto de trabajo que solo se puede cambiar a través de procedimientos formales de control de cambios.', daily: 'Es la "foto oficial" del plan original (alcance, tiempo y costo). Se usa para comparar cómo vamos realmente.', example: 'El presupuesto inicial aprobado para un viaje es de 1000€. Esa es la línea base de costo.', ref: 'PMBOK® 7ª Ed., Glosario, pág. 245.' },
+            { title: 'EDT / WBS', category: 'planificacion', icon: '<svg class="w-16 h-16 text-blue-500 mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 6a2 2 0 012-2h12a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V6z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10 12h4m-4 4h4m-4-8h4"></path></svg>', formal: '(Estructura de Desglose del Trabajo) Una descomposición jerárquica del alcance total del trabajo a realizar por el equipo del proyecto.', daily: 'Es como desarmar un coche en todas sus piezas. Divides el gran objetivo del proyecto en partes más pequeñas y manejables.', example: 'Proyecto: Construir una bicicleta. Nivel 1: Cuadro, Ruedas. Nivel 2 (Ruedas): Llanta, Neumático, Radios.', ref: 'PMBOK® 7ª Ed., Glosario, pág. 241.' },
+            { title: 'Patrocinador', category: 'fundamentos', icon: '<svg class="w-16 h-16 text-blue-500 mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>', formal: 'Individuo o grupo que provee recursos y apoyo para el proyecto, y que es responsable de facilitar su éxito.', daily: 'Es el "padrino" o "madrina" del proyecto. La persona con la autoridad que defiende el proyecto y elimina obstáculos.', example: 'El Director de Marketing que aprueba el presupuesto y defiende una nueva campaña publicitaria.', ref: 'PMBOK® 7ª Ed., Glosario, pág. 248.' },
+            { title: 'Valor', category: 'fundamentos', icon: '<svg class="w-16 h-16 text-blue-500 mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-12v4m-2-2h4m5 6v4m-2-2h4M12 3v18"></path></svg>', formal: 'La cualidad, importancia o utilidad de algo. El indicador definitivo del éxito del proyecto.', daily: 'Es el "para qué" real del proyecto. No se trata solo de terminarlo, sino de que el resultado aporte un beneficio real y útil.', example: 'El valor de una app de reparto no es la app en sí, sino que los usuarios ahorren tiempo y los restaurantes aumenten sus ventas.', ref: 'PMBOK® 7ª Ed., Principio 3.4, pág. 34.' },
+            { title: 'Director de Proyecto', category: 'fundamentos', icon: '<svg class="w-16 h-16 text-blue-500 mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>', formal: 'Persona nombrada por la organización ejecutante para liderar al equipo que es responsable de alcanzar los objetivos del proyecto.', daily: 'Es el director de orquesta. No toca todos los instrumentos, pero se asegura de que todos los músicos toquen en armonía.', example: 'El jefe de obra en una construcción, el productor de una película, o la persona que se encarga de una mudanza familiar.', ref: 'PMBOK® 7ª Ed., Sec. 1.2, pág. 4.' },
+            { title: 'Presupuesto', category: 'planificacion', icon: '<svg class="w-16 h-16 text-blue-500 mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v.01M12 6v-1h4a2 2 0 012 2v11a2 2 0 01-2 2H8a2 2 0 01-2-2V8a2 2 0 012-2h4z"></path></svg>', formal: 'La estimación de costos aprobada para el proyecto o cualquier componente de la EDT o actividad del cronograma.', daily: 'Es la cantidad de dinero que tienes permiso para gastar en el proyecto. Es tu límite financiero.', example: 'Para una boda, el presupuesto total es de 15,000€. De ahí, se asignan 8,000€ para el banquete, 2,000€ para el fotógrafo, etc.', ref: 'PMBOK® 7ª Ed., Glosario, pág. 249.' },
+            { title: 'Acta de Constitución', category: 'fundamentos', icon: '<svg class="w-16 h-16 text-blue-500 mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>', formal: 'Documento que autoriza formalmente la existencia de un proyecto y proporciona al director la autoridad para aplicar recursos.', daily: 'Es el "certificado de nacimiento" del proyecto. Un documento formal que dice: "Este proyecto existe oficialmente y esta persona está a cargo".', example: 'Un memorando del CEO que dice: "Autorizo el proyecto \'Nueva Intranet\' con un presupuesto de 50,000€, a ser liderado por Ana Pérez".', ref: 'PMBOK® 7ª Ed., Glosario, pág. 235.' },
+            { title: 'Lecciones Aprendidas', category: 'ejecucion', icon: '<svg class="w-16 h-16 text-blue-500 mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547a2 2 0 00-.547 1.806l.477 2.387a6 6 0 00.517 3.86l.158.318a6 6 0 003.86.517l2.387.477a2 2 0 001.806-.547a2 2 0 00.547-1.806l-.477-2.387a6 6 0 00-.517-3.86l-.158-.318z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.536l-1.144 2.32a1 1 0 01-.948.69h-2.522a1 1 0 01-.948-1.31l2.32-4.64a1 1 0 011.896 0l2.32 4.64a1 1 0 01-.948 1.31h-2.522a1 1 0 01-.948-.69z"></path></svg>', formal: 'El conocimiento adquirido durante un proyecto que muestra cómo se abordaron o deberían abordarse en el futuro los eventos del proyecto.', daily: 'Es la reflexión post-partido. ¿Qué hicimos bien? ¿En qué fallamos? ¿Qué haríamos diferente la próxima vez?', example: 'Después de un evento, el equipo concluye: "La promoción en redes funcionó genial, pero nos quedamos sin bebidas muy pronto".', ref: 'PMBOK® 7ª Ed., Glosario, pág. 245.' },
+            { title: 'Requisito', category: 'planificacion', icon: '<svg class="w-16 h-16 text-blue-500 mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>', formal: 'Una condición o capacidad que debe estar presente en un producto, servicio o resultado para satisfacer una necesidad.', daily: 'Es una "necesidad" que el resultado de tu proyecto debe cumplir para ser considerado exitoso. Son las peticiones específicas del cliente.', example: 'Para una nueva app de banca móvil, un requisito es: "El usuario debe poder iniciar sesión usando su huella digital".', ref: 'PMBOK® 7ª Ed., Glosario, pág. 250.' },
+            { title: 'Programa', category: 'fundamentos', icon: '<svg class="w-16 h-16 text-blue-500 mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 19.143A2 2 0 007 21h10a2 2 0 002-1.857M5 8.857A2 2 0 017 7h10a2 2 0 012 1.857M12 3v4M7 3v4m10-4v4"></path></svg>', formal: 'Proyectos, programas secundarios y actividades de programas relacionados cuya gestión se realiza de manera coordinada para obtener beneficios que no se obtendrían si se gestionaran individualmente.', daily: 'Un grupo de proyectos relacionados que se gestionan juntos porque tiene más sentido. Es como una "serie" de TV, donde cada episodio es un proyecto.', example: 'El programa "Lanzamiento del nuevo cohete" incluye el proyecto de "Diseño del motor" y el de "Construcción del fuselaje".', ref: 'PMBOK® 7ª Ed., Sec. 1.2, pág. 4.' },
+            { title: 'Portafolio', category: 'fundamentos', icon: '<svg class="w-16 h-16 text-blue-500 mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>', formal: 'Proyectos, programas, portafolios secundarios y operaciones gestionadas como un grupo para lograr los objetivos estratégicos.', daily: 'La "cartera de inversiones" de una empresa, pero con proyectos. Se eligen para asegurarse de que todos juntos ayudan a alcanzar las metas más grandes.', example: 'El portafolio de una farmacéutica puede incluir programas para nuevas vacunas y proyectos para modernizar fábricas.', ref: 'PMBOK® 7ª Ed., Sec. 1.2, pág. 4.' },
+            { title: 'Ciclo de Vida', category: 'fundamentos', icon: '<svg class="w-16 h-16 text-blue-500 mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>', formal: 'La serie de fases que atraviesa un proyecto desde su inicio hasta su conclusión.', daily: 'Son las etapas de la vida de un proyecto: nace (inicio), crece (planificación y ejecución) y termina (cierre). Ayuda a organizar el trabajo.', example: 'Un ciclo simple: 1. Idea y Aprobación, 2. Diseño y Construcción, 3. Pruebas y Entrega, 4. Cierre.', ref: 'PMBOK® 7ª Ed., Dom. de Desempeño, pág. 32.' }
+        ];
 
-            // 3. Obtener el ID del detalle a mostrar desde el atributo 'data-target'
-            const targetId = this.getAttribute('data-target');
-            const targetStep = document.getElementById(targetId);
+        // Crear tarjeta (añadí: botón speak, textarea para notas + guardar)
+        function createCard(term) {
+            const note = localStorage.getItem(`note-${term.title}`) || '';
+            return `
+            <div class="card-container h-64" data-category="${term.category}" data-title="${term.title}">
+                <div class="card-inner">
+                    <div class="card-front bg-white shadow-lg flex flex-col justify-center items-center p-6 text-center">
+                        ${term.icon}
+                        <h2 class="text-2xl font-bold text-slate-800">${term.title}</h2>
+                        <p class="text-sm text-slate-500 mt-2">Haz clic para ver detalles</p>
+                    </div>
+                    <div class="card-back bg-white shadow-lg flex flex-col">
+                        <div class="p-6 flex-grow overflow-y-auto">
+                            <div class="flex justify-between items-center">
+                                <h3 class="font-bold text-slate-800">Definición Formal</h3>
+                                <button class="speak-btn text-blue-500 hover:text-blue-700" title="Escuchar definición" aria-label="Escuchar definición">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path></svg>
+                                </button>
+                            </div>
+                            <p class="text-slate-600 text-sm mt-1 formal-def">${term.formal}</p>
+                            <div class="mt-3"><h3 class="font-bold text-slate-800">En Lenguaje Cotidiano</h3><p class="text-slate-600 text-sm mt-1">${term.daily}</p></div>
+                             <div class="mt-3"><h3 class="font-bold text-slate-800">Ejemplo Práctico</h3><p class="text-slate-600 text-sm mt-1">${term.example}</p></div>
 
-            // 4. Mostrar el detalle correspondiente y resaltar el nodo
-            if (targetStep) {
-                targetStep.classList.add('visible');
-                this.classList.add('active');
+                             <!-- Mis Notas (guardadas en localStorage por término) -->
+                             <div class="mt-4 border-t pt-3">
+                                <h4 class="font-semibold text-slate-800">Notas</h4>
+                                <textarea class="note-input w-full mt-2 p-2 text-sm border rounded bg-slate-50" rows="2" placeholder="Añade tu propio ejemplo o recordatorio...">${note}</textarea>
+                                <div class="mt-2 flex items-center">
+                                    <button class="save-note-btn text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded hover:bg-blue-200">Guardar Nota</button>
+                                    <span class="save-feedback text-xs text-green-600 ml-3 opacity-0 transition-opacity">¡Guardado!</span>
+                                </div>
+                             </div>
+
+                        </div>
+                        <footer class="px-6 py-3 border-t text-xs text-slate-400"><p>Ref: ${term.ref}</p></footer>
+                    </div>
+                </div>
+            </div>
+            `;
+        }
+        
+        // Cargar todas las tarjetas
+        glossaryGrid.innerHTML = terms.map(createCard).join('');
+
+        // --- Funcionalidad General (flip, TTS, guardar notas) ---
+        glossaryGrid.addEventListener('click', function(e) {
+            const cardContainer = e.target.closest('.card-container');
+            if (!cardContainer) return;
+
+            // Si se hizo clic en el botón de escuchar
+            if (e.target.closest('.speak-btn')) {
+                const title = cardContainer.dataset.title;
+                const definition = cardContainer.querySelector('.formal-def').textContent;
+                const textToSpeak = `${title}. ${definition}`;
+                
+                // TTS
+                try {
+                    window.speechSynthesis.cancel();
+                    const utterance = new SpeechSynthesisUtterance(textToSpeak);
+                    utterance.lang = 'es-ES';
+                    window.speechSynthesis.speak(utterance);
+                } catch (err) {
+                    console.warn('TTS no disponible:', err);
+                }
+                return; // no hacer flip cuando se pulsa este botón
+            }
+
+            // Si se hizo clic en guardar nota
+            if (e.target.closest('.save-note-btn')) {
+                const title = cardContainer.dataset.title;
+                const noteInput = cardContainer.querySelector('.note-input');
+                localStorage.setItem(`note-${title}`, noteInput.value);
+
+                const feedback = cardContainer.querySelector('.save-feedback');
+                feedback.style.opacity = '1';
+                setTimeout(() => { feedback.style.opacity = '0'; }, 1800);
+                return; // no hacer flip cuando se pulsa guardar
+            }
+
+            // Si se hace foco en el textarea, no voltear
+            if (e.target.closest('.note-input')) {
+                return;
+            }
+
+            // Por defecto: voltear tarjeta
+            cardContainer.classList.toggle('is-flipped');
+        });
+
+        // --- Lógica del Quiz (modal) ---
+        function startQuiz() {
+            const randomIndex = Math.floor(Math.random() * terms.length);
+            currentQuizTerm = terms[randomIndex];
+            quizDefinition.textContent = currentQuizTerm.formal;
+
+            quizAnswerInput.value = '';
+            quizFeedback.textContent = '';
+            quizFeedback.className = 'text-sm min-h-[20px] mb-4';
+            checkAnswerBtn.classList.remove('hidden');
+            nextQuestionBtn.classList.add('hidden');
+            quizAnswerInput.disabled = false;
+
+            // Mostrar modal (pequeña animación)
+            quizModal.classList.remove('invisible', 'opacity-0');
+            quizModalContent.classList.remove('scale-95');
+        }
+
+        function checkAnswer() {
+            const userAnswer = quizAnswerInput.value.trim().toLowerCase();
+            const correctAnswer = currentQuizTerm.title.toLowerCase();
+            if (userAnswer === correctAnswer) {
+                quizFeedback.textContent = '¡Correcto! 🎉';
+                quizFeedback.classList.add('text-green-600');
+            } else {
+                quizFeedback.textContent = `Casi... La respuesta correcta es: ${currentQuizTerm.title}`;
+                quizFeedback.classList.add('text-red-600');
+            }
+            checkAnswerBtn.classList.add('hidden');
+            nextQuestionBtn.classList.remove('hidden');
+            quizAnswerInput.disabled = true;
+        }
+
+        // Eventos del modal
+        startQuizBtn.addEventListener('click', startQuiz);
+        checkAnswerBtn.addEventListener('click', checkAnswer);
+        nextQuestionBtn.addEventListener('click', startQuiz); // nueva pregunta
+        quizAnswerInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                checkAnswer();
             }
         });
-    });
-});
-</script>
+        closeQuizBtn.addEventListener('click', () => {
+            // ocultar modal
+            quizModal.classList.add('invisible', 'opacity-0');
+            quizModalContent.classList.add('scale-95');
+        });
 
+        // --- Lógica de Filtros y Búsqueda (igual que en código1) ---
+        function filterAndSearch() {
+            const searchTerm = searchInput.value.toLowerCase();
+            const activeFilter = document.querySelector('.filter-btn.bg-blue-600').dataset.filter;
+            
+            const cards = glossaryGrid.querySelectorAll('.card-container');
+            cards.forEach(card => {
+                const title = card.querySelector('h2').textContent.toLowerCase();
+                const category = card.dataset.category;
+
+                const matchesSearch = title.includes(searchTerm);
+                const matchesFilter = (activeFilter === 'all' || category === activeFilter);
+
+                if (matchesSearch && matchesFilter) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                filterBtns.forEach(b => {
+                    b.classList.remove('bg-blue-600', 'text-white');
+                    b.classList.add('bg-white', 'text-slate-700');
+                });
+                this.classList.add('bg-blue-600', 'text-white');
+                this.classList.remove('bg-white', 'text-slate-700');
+                filterAndSearch();
+            });
+        });
+
+        searchInput.addEventListener('input', filterAndSearch);
+    });
+</script>
 </body>
 </html>
