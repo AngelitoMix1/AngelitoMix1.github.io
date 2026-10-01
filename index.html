@@ -3,48 +3,105 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Node(1) - IoT Gateway</title>
+    <title>Node(1) - Industrial IoT Gateway</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap');
-        body { background: #000; color: #00FF66; font-family: 'Space Mono', monospace; padding: 20px; }
-        pre { background: #111; padding: 15px; border: 1px solid #333; border-radius: 5px; overflow-x: auto; }
-        h1 { font-size: 20px; text-transform: uppercase; border-bottom: 1px solid #333; padding-bottom: 10px; }
+        :root { --bg: #000; --text: #FFF; --green: #00FF66; --red: #E60000; --gray: #777; --border: #333; }
+        body { background: var(--bg); color: var(--text); font-family: 'Space Mono', monospace; padding: 20px; max-width: 900px; margin: auto; }
+        header { border-bottom: 1px solid var(--border); padding-bottom: 15px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
+        h1 { margin: 0; font-size: 22px; text-transform: uppercase; letter-spacing: -1px; }
+        .status { font-size: 11px; color: var(--green); background: rgba(0,255,102,0.1); padding: 4px 8px; border: 1px solid var(--green); border-radius: 4px; }
+        
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 12px; }
+        th, td { border: 1px solid var(--border); padding: 10px; text-align: left; }
+        th { background: #111; color: var(--gray); text-transform: uppercase; font-size: 10px; }
+        tr:nth-child(even) { background: #050505; }
+        .btn-clear { background: transparent; color: var(--red); border: 1px solid var(--red); padding: 8px 15px; cursor: pointer; font-family: inherit; font-size: 11px; text-transform: uppercase; margin-top: 20px; }
+        .btn-clear:hover { background: var(--red); color: var(--text); }
     </style>
 </head>
 <body>
-    <h1>Node(1) // IoT Gateway Active</h1>
-    <p>Última telemetría recibida del nodo móvil:</p>
-    <pre id="data-view">Esperando datos de campo...</pre>
+    <header>
+        <h1>Node(1) // Cloud Gateway</h1>
+        <div class="status">ONLINE & LISTENING</div>
+    </header>
+
+    <p style="font-size: 12px; color: var(--gray);">Historial de telemetría de campo recolectada desde DroidScript:</p>
+
+    <table id="telemetry-table">
+        <thead>
+            <tr>
+                <th>Timestamp</th>
+                <th>Node ID</th>
+                <th>Ruido (dB)</th>
+                <th>Luz (Lux)</th>
+                <th>EMI (μT)</th>
+                <th>GPS</th>
+                <th>IMU (Pitch/Roll)</th>
+                <th>Alineado</th>
+            </tr>
+        </thead>
+        <tbody id="log-body">
+            <tr><td colspan="8" style="text-align: center; color: var(--gray);">Sin registros en memoria local aún. Presiona "Transmit Data" en el nodo.</td></tr>
+        </tbody>
+    </table>
+
+    <button class="btn-clear" onclick="clearLogs()">Limpiar Historial</button>
 
     <script>
-        // Verificamos si la app nos está mandando datos por URL (Query Params)
+        // 1. Capturamos los parámetros que manda DroidScript por GET
         const params = new URLSearchParams(window.location.search);
         
+        // Recuperamos historial previo guardado en el navegador
+        let logs = JSON.parse(localStorage.getItem('industrial_logs') || '[]');
+
         if (params.has('node_id') || params.has('ruido')) {
-            const telemetry = {
+            const newRecord = {
                 timestamp: params.get('timestamp') || new Date().toISOString(),
-                node_id: params.get('node_id') || 'N/A',
-                ruido_db: params.get('ruido') || 0,
-                luz: params.get('luz') || 0,
-                emi_ut: params.get('emi') || 0,
-                lat: params.get('lat') || 0,
-                lon: params.get('lon') || 0,
-                pitch: params.get('pitch') || 0,
-                roll: params.get('roll') || 0,
+                node_id: params.get('node_id') || 'Pixel6Pro',
+                ruido: params.get('ruido') || '0',
+                luz: params.get('luz') || '0',
+                emi: params.get('emi') || '0',
+                lat: params.get('lat') || '0',
+                lon: params.get('lon') || '0',
+                pitch: params.get('pitch') || '0',
+                roll: params.get('roll') || '0',
                 alineado: params.get('alineado') || 'NO'
             };
 
-            // Guardamos localmente en el navegador de la página para persistencia temporal
-            localStorage.setItem('latest_node_data', JSON.stringify(telemetry));
-            document.getElementById('data-view').innerText = JSON.stringify(telemetry, null, 2);
-        } else {
-            // Si solo entran a consultar, mostramos lo último guardado
-            const savedData = localStorage.getItem('latest_node_data');
-            if (savedData) {
-                document.getElementById('data-view').innerText = JSON.stringify(JSON.parse(savedData), null, 2);
-            } else {
-                document.getElementById('data-view').innerText = "{ status: 'Gateway en línea, sin paquetes registrados aún' }";
-            }
+            // Agregamos el nuevo registro al principio de la lista
+            logs.unshift(newRecord);
+            
+            // Guardamos el historial persistente en el navegador
+            localStorage.setItem('industrial_logs', JSON.stringify(logs));
+            
+            // Limpiamos los parámetros de la URL para evitar duplicados si recargan la página
+            window.history.replaceState({}, document.title, window.location.pathname);
+        }
+
+        // 2. Renderizamos la tabla en el HTML
+        const tbody = document.getElementById('log-body');
+        if (logs.length > 0) {
+            tbody.innerHTML = "";
+            logs.forEach(item => {
+                let tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${item.timestamp.replace('T', ' ').substring(0, 19)}</td>
+                    <td>${item.node_id}</td>
+                    <td>${item.ruido} dB</td>
+                    <td>${item.luz} lx</td>
+                    <td>${item.emi} μT</td>
+                    <td>${item.lat}, ${item.lon}</td>
+                    <td>${item.pitch}° / ${item.roll}°</td>
+                    <td style="color: ${item.alineado === 'SÍ' ? 'var(--green)' : 'var(--red)'};">${item.alineado}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function clearLogs() {
+            localStorage.removeItem('industrial_logs');
+            location.reload();
         }
     </script>
 </body>
